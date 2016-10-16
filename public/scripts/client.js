@@ -5,7 +5,9 @@ $(document).ready(function() {
     var newTask = $(this).siblings('#task-name').val();
     createTask(newTask);
     $(this).siblings('#task-name').val('');
-  })
+  });
+
+  $('#task-display').on('click', '.delete', deleteTask);
 
     /*  Test function for checkboxes!  */
     // $('#test').click(function(){
@@ -18,7 +20,7 @@ $(document).ready(function() {
     // });
     /*  End test function  */
 
-  //getTasks();
+  getTasks();
 });
 
 function createTask(sentTask) {
@@ -38,6 +40,7 @@ var completeTasks = [];
 
 //  GET request for tasks
 function getTasks() {
+  $('#task-display').empty();
   $.ajax({
     type: 'GET',
     url: '/tasks',
@@ -49,10 +52,29 @@ function showTasks(response) {
   console.log(response);
   response.forEach(function(task) {
     var $taskDiv = $('<div class="task" id="' + task.id + '"></div>');
-    $taskDiv.append('<p>' + task.task + '</p>');
-    $taskDiv.append('<p>' + task.status + '</p>')
+    var $checkbox = $('<input class="check" type="checkbox"></input>');
+    if (task.status =='complete') {
+      $checkbox.prop('checked', true);
+    }
+    $taskDiv.append($checkbox);
+    $taskDiv.append('<input type="text" value="' + task.task + '"></input>');
+    // $taskDiv.append('<p>' + task.status + '</p>')
+    $taskDiv.append('<button class="update btn btn-sm btn-warning" type="button">Update Task</button>');
+    $taskDiv.append('<button class="delete btn btn-sm btn-danger" type="button">X</button>')
     console.log($taskDiv.attr('id'));
     $('#task-display').append($taskDiv);
+  });
+}
+
+//  DELETE request for tasks
+function deleteTask(event) {
+  event.preventDefault();
+  var taskId = $(this).parent().attr('id');
+
+  $.ajax({
+    type: 'DELETE',
+    url: 'tasks/' + taskId,
+    success: getTasks
   });
 }
 //  NOTES
