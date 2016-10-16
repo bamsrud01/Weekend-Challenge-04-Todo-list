@@ -21,6 +21,7 @@ router.get('/', function(req, res){
         res.sendStatus(500);
         return;
       }
+      //  This query will order all rows by completion status
       client.query('SELECT * FROM tasks ORDER BY status DESC, id;', function(err, result){
         if (err){
           console.log('Error querying database:', err);

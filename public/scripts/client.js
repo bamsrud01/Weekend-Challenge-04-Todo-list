@@ -1,5 +1,4 @@
 $(document).ready(function() {
-  console.log('Document loaded');
 
   //  Create a new task
   $('#create-task').on('click', '#submit', function(){
@@ -8,24 +7,14 @@ $(document).ready(function() {
     $(this).siblings('#task-name').val('');
   });
 
-  //  Delete button
+  //  Delete button handler
   $('#task-display').on('click', '.delete', deleteTask);
 
-  //  Update button
+  //  Update button handler
   $('#task-display').on('click', '.update', updatePrep);
 
   //  Checkbox handler
   $('#task-display').on('click', '.check', updatePrep);
-    /*  Test function for checkboxes!  */
-    // $('#test').click(function(){
-    //   console.log('clicked!');
-    //   if ($(this).prop('checked')) {
-    //     console.log('Checked');
-    //   } else {
-    //     console.log('Not checked');
-    //   }
-    // });
-    /*  End test function  */
 
   //  Display starting tasks
   getTasks();
@@ -41,10 +30,6 @@ function createTask(sentTask) {
     success: getTasks
   });
 }
-//  These arrays will hold objects for each complete and incomplete task
-//////  Move inside a function later!
-var incompleteTasks = [];
-var completeTasks = [];
 
 //  GET request for tasks
 function getTasks() {
@@ -56,13 +41,16 @@ function getTasks() {
   });
 }
 
+//  Function to create and append divs for each task in the database
 function showTasks(response) {
-  console.log(response);
   response.forEach(function(task) {
     var $taskDiv = $('<div class="task" id="' + task.id + '"></div>');
     var $checkbox = $('<input class="check" type="checkbox"></input>');
-    if (task.status =='complete') {
+    if (task.status == 'complete') {
       $checkbox.prop('checked', true);
+      $taskDiv.addClass('completed');
+    } else if (task.status == 'incomplete') {
+      $taskDiv.removeClass('completed');
     }
     $taskDiv.append($checkbox);
     $taskDiv.append('<input class="task-name" type="text" value="' + task.task + '"></input>');
@@ -78,37 +66,36 @@ function deleteTask(event) {
   event.preventDefault();
   var taskId = $(this).parent().attr('id');
 
-  $.ajax({
-    type: 'DELETE',
-    url: 'tasks/' + taskId,
-    success: getTasks
-  });
+  if (confirm('Are you sure you want to delete this task?')) {
+    $.ajax({
+      type: 'DELETE',
+      url: 'tasks/' + taskId,
+      success: getTasks
+    });
+  }
 }
 
+//  Function to set values before updating
 function updatePrep() {
   var taskId = $(this).parent().attr('id');
   var task = $(this).siblings('.task-name').val();
   var status;
   var $isChecked = $(this).parent().find('.check');
-  console.log('Checked:', $isChecked);
   if ($isChecked.prop('checked')) {
     status = 'complete';
   } else if (!$isChecked.prop('checked')) {
     status = 'incomplete';
-  } else {
-    console.log('error');
   }
-  console.log('ID:', taskId, 'Name:', task, 'Status:', status);
   updateTask(taskId, task, status);
 }
 
+//  PUT request to update tasks
 function updateTask(taskId, taskName, taskStatus) {
   var taskToUpdate = {
     id: taskId,
     task: taskName,
     status: taskStatus
   }
-  console.log(taskToUpdate);
   $.ajax({
     type: 'PUT',
     url: 'tasks/' + taskId,
@@ -116,8 +103,3 @@ function updateTask(taskId, taskName, taskStatus) {
     complete: getTasks
   });
 }
-//  NOTES
-
-// if($("#checkSurfaceEnvironment-1").prop('checked') == true){
-//     //do something
-// }

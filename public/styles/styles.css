@@ -1,3 +1,35 @@
+.content {
+  width: 75%;
+  margin: 15px auto 0 auto;
+  background-color: #fdffef;
+  border: 3px solid brown;
+  border-radius: 25px;
+  padding: 25px;
+}
 .check {
   transform: scale(1.2, 1.2);
+  transform: translate(-5px, -8px);
+}
+
+label, input[type=text] {
+  font-size: 24px;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+body {
+  background: url('images/escheresque.png') top left repeat;
+}
+
+input, button {
+  margin: 5px;
+}
+
+.completed input {
+  color: DarkGrey;
+  text-decoration: line-through;
+}
+
+button {
+  transform: translate(0, -8px);
 }
