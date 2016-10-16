@@ -1,14 +1,21 @@
 $(document).ready(function() {
   console.log('Document loaded');
 
+  //  Create a new task
   $('#create-task').on('click', '#submit', function(){
     var newTask = $(this).siblings('#task-name').val();
     createTask(newTask);
     $(this).siblings('#task-name').val('');
   });
 
+  //  Delete button
   $('#task-display').on('click', '.delete', deleteTask);
 
+  //  Update button
+  $('#task-display').on('click', '.update', updatePrep);
+
+  //  Checkbox handler
+  $('#task-display').on('click', '.check', updatePrep);
     /*  Test function for checkboxes!  */
     // $('#test').click(function(){
     //   console.log('clicked!');
@@ -20,6 +27,7 @@ $(document).ready(function() {
     // });
     /*  End test function  */
 
+  //  Display starting tasks
   getTasks();
 });
 
@@ -57,11 +65,10 @@ function showTasks(response) {
       $checkbox.prop('checked', true);
     }
     $taskDiv.append($checkbox);
-    $taskDiv.append('<input type="text" value="' + task.task + '"></input>');
+    $taskDiv.append('<input class="task-name" type="text" value="' + task.task + '"></input>');
     // $taskDiv.append('<p>' + task.status + '</p>')
     $taskDiv.append('<button class="update btn btn-sm btn-warning" type="button">Update Task</button>');
     $taskDiv.append('<button class="delete btn btn-sm btn-danger" type="button">X</button>')
-    console.log($taskDiv.attr('id'));
     $('#task-display').append($taskDiv);
   });
 }
@@ -75,6 +82,38 @@ function deleteTask(event) {
     type: 'DELETE',
     url: 'tasks/' + taskId,
     success: getTasks
+  });
+}
+
+function updatePrep() {
+  var taskId = $(this).parent().attr('id');
+  var task = $(this).siblings('.task-name').val();
+  var status;
+  var $isChecked = $(this).parent().find('.check');
+  console.log('Checked:', $isChecked);
+  if ($isChecked.prop('checked')) {
+    status = 'complete';
+  } else if (!$isChecked.prop('checked')) {
+    status = 'incomplete';
+  } else {
+    console.log('error');
+  }
+  console.log('ID:', taskId, 'Name:', task, 'Status:', status);
+  updateTask(taskId, task, status);
+}
+
+function updateTask(taskId, taskName, taskStatus) {
+  var taskToUpdate = {
+    id: taskId,
+    task: taskName,
+    status: taskStatus
+  }
+  console.log(taskToUpdate);
+  $.ajax({
+    type: 'PUT',
+    url: 'tasks/' + taskId,
+    data: taskToUpdate,
+    complete: getTasks
   });
 }
 //  NOTES

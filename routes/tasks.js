@@ -21,7 +21,7 @@ router.get('/', function(req, res){
         res.sendStatus(500);
         return;
       }
-      client.query('SELECT * FROM tasks;', function(err, result){
+      client.query('SELECT * FROM tasks ORDER BY status DESC, id;', function(err, result){
         if (err){
           console.log('Error querying database:', err);
           res.sendStatus(500);
