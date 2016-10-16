@@ -45,7 +45,7 @@ router.post('/', function(req, res){
         res.sendStatus(500);
         return;
       }
-      client.query('INSERT INTO tasks (task, status) VALUES ($1, #2) RETURNING *;', [req.body.task, req.body.status] function(err, result){
+      client.query('INSERT INTO tasks (task, status) VALUES ($1, $2) RETURNING *;', [req.body.task, req.body.status], function(err, result){
         if (err){
           console.log('Error querying database:', err);
           res.sendStatus(500);
